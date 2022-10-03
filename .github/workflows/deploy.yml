@@ -1,0 +1,61 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - .github/workflows/deploy.yml
+      - serverless.yml
+      - requirements-*.txt
+      - utils/**
+      - bigquery_load/*.py
+      - cartola_matches_extract/*.py
+      - cartola_matches_transform/*.py
+      - cartola_players_extract/*.py
+      - cartola_players_transform/*.py
+      - cartola_scouts_extract/*.py
+      - cartola_scouts_transform/*.py
+      - cartola_fivethirtyeight_extract/*.py
+      - cartola_odds_extract/*.py
+      - cartola_odds_transform/*.py
+      - cartola_transfermarkt_extract/*.py
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.REF_NAME }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Set up Serverless
+        run: |
+          npm install -g serverless@3
+          npm install --save-dev serverless-step-functions
+
+      - name: Serverless AWS Authentication
+        run: sls config credentials --provider aws --key ${{ secrets.AWS_KEY }} --secret ${{ secrets.AWS_SECRET }}
+
+      - name: Make Layers
+        run: make layers
+
+      - name: Deploy
+        run: sls deploy --stage ${{ github.REF_NAME }} --conceal
+        env:
+          GCP_KEYFILE: ${{ secrets.GCP_KEYFILE }}
+          THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
