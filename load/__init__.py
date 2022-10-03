@@ -1,4 +1,4 @@
-"""Load players data from Cartola FC to the database."""
+"""Load to the database."""
 
 import io
 import json
