@@ -114,7 +114,7 @@ functions:
     layers:
       - { Ref: RequestsLambdaLayer }
     environment:
-      BUCKET_NAME: odds-${opt:stage}
+      BUCKET_NAME: betting-${opt:stage}
       THE_ODDS_API_KEY: ${env:THE_ODDS_API_KEY}
   
   odds-transform:
