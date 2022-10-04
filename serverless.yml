@@ -1,21 +1,11 @@
-service: palpiteiro
+service: palpiteiro-etl
 frameworkVersion: "3"
 
 params:
   main:
-    cartola-bucket: cartola-main
-    fivethirtyeight-bucket: fivethirtyeight-main
-    odds-bucket: betting-main
-    transfermarkt-bucket: transfermarkt-main
-    deployment-bucket: palpiteiro-main
     cartola-bot-schedule-enabled: true
 
   dev:
-    cartola-bucket: cartola-dev
-    fivethirtyeight-bucket: fivethirtyeight-dev
-    odds-bucket: betting-dev
-    transfermarkt-bucket: transfermarkt-dev
-    deployment-bucket: palpiteiro-dev
     cartola-bot-schedule-enabled: false
 
 custom:
@@ -25,11 +15,7 @@ provider:
   name: aws
   stage: ${opt:stage}
   region: us-east-1
-  deploymentBucket:
-    name: ${param:deployment-bucket}
-  apiGateway:
-    apiKeys:
-      - streamlit-${opt:stage}
+  deploymentBucket: palpiteiro-${opt:stage}
 
 package:
   individually: true
@@ -38,160 +24,140 @@ package:
     - "utils/**/*.py"
 
 functions:
-  extract-cartola-players:
-    handler: lambda_extract_cartola_players.handler
+  cartola-players-extract:
+    handler: cartola_players_extract.handler
     description: Extract players data from Cartola FC to JSON.
     runtime: python3.9
-    role:
-      { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - "lambda_extract_cartola_players/*.py"
+        - "cartola_players_extract/*.py"
     environment:
-      BUCKET: ${param:cartola-bucket}
+      BUCKET_NAME: cartola-${opt:stage}
 
-  extract-cartola-scouts:
-    handler: lambda_extract_cartola_scouts.handler
-    description: Extract scouts data from Cartola FC to JSON.
-    runtime: python3.9
-    role:
-      { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
-    package:
-      patterns:
-        - "lambda_extract_cartola_scouts/*.py"
-    environment:
-      BUCKET: ${param:cartola-bucket}
-
-  transform-cartola-players:
-    handler: lambda_transform_cartola_players.handler
+  cartola-players-transform:
+    handler: cartola_players_transform.handler
     description: Transform players data from Cartola FC from JSON to CSV.
     runtime: python3.9
-    role:
-      { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - "lambda_transform_cartola_players/*.py"
+        - "cartola_players_transform/*.py"
     layers:
       - { Ref: PandasLambdaLayer }
 
-  transform-cartola-scouts:
-    handler: lambda_transform_cartola_scouts.handler
+  cartola-scouts-extract:
+    handler: cartola_scouts_extract.handler
+    description: Extract scouts data from Cartola FC to JSON.
+    runtime: python3.9
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    package:
+      patterns:
+        - "cartola_scouts_extract/*.py"
+    environment:
+      BUCKET_NAME: cartola-${opt:stage}
+
+  cartola-scouts-transform:
+    handler: cartola_scouts_transform.handler
     description: Transform scouts data from Cartola FC from JSON to CSV.
     runtime: python3.9
-    role:
-      { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - "lambda_transform_cartola_scouts/*.py"
+        - "cartola_scouts_transform/*.py"
     layers:
       - { Ref: PandasLambdaLayer }
 
-  transform-odds:
-    handler: lambda_transform_odds.handler
-    description: Transform odds data.
-    runtime: python3.9
-    role:
-      { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
-    package:
-      patterns:
-        - "lambda_transform_odds/*.py"
-    layers:
-      - { Ref: PandasLambdaLayer }
-
-  extract-cartola-matches:
-    handler: lambda_extract_cartola_matches.handler
+  cartola-matches-extract:
+    handler: cartola_matches_extract.handler
     description: Extract matches data from Cartola FC to JSON.
     runtime: python3.9
-    role:
-      { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - "lambda_extract_cartola_matches/*.py"
+        - "cartola_matches_extract/*.py"
     environment:
-      BUCKET: ${param:cartola-bucket}
+      BUCKET_NAME: cartola-${opt:stage}
 
-  transform-cartola-matches:
-    handler: lambda_transform_cartola_matches.handler
+  cartola-matches-transform:
+    handler: cartola_matches_transform.handler
     description: Transform matches data from Cartola FC from JSON to CSV.
     runtime: python3.9
-    role:
-      { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - "lambda_transform_cartola_matches/*.py"
+        - "cartola_matches_transform/*.py"
     layers:
       - { Ref: PandasLambdaLayer }
 
-  extract-fivethirtyeight-spi:
-    handler: lambda_extract_fivethirtyeight_spi.handler
+  fivethirtyeight-spi-extract:
+    handler: fivethirtyeight_spi_extract.handler
     description: Extract matches data from FiveThirtyEight SPI to CSV.
     runtime: python3.9
-    role:
-      { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - "lambda_extract_fivethirtyeight_spi/*.py"
+        - "fivethirtyeight_spi_extract/*.py"
     layers:
       - { Ref: PandasLambdaLayer }
     environment:
-      BUCKET: ${param:fivethirtyeight-bucket}
+      BUCKET_NAME: fivethirtyeight-${opt:stage}
 
-  extract-odds:
-    handler: lambda_extract_odds.handler
+  odds-extract:
+    handler: odds_extract.handler
     description: Extract odds from The Odds API.
     runtime: python3.9
-    role:
-      { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - "lambda_extract_odds/*.py"
+        - "odds_extract/*.py"
     layers:
       - { Ref: RequestsLambdaLayer }
     environment:
-      BUCKET: ${param:odds-bucket}
+      BUCKET_NAME: betting-${opt:stage}
       THE_ODDS_API_KEY: ${env:THE_ODDS_API_KEY}
+  
+  odds-transform:
+    handler: odds_transform.handler
+    description: Transform odds data.
+    runtime: python3.9
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    package:
+      patterns:
+        - "odds_transform/*.py"
+    layers:
+      - { Ref: PandasLambdaLayer }
 
-  extract-transfermarkt:
-    handler: lambda_extract_transfermarkt.handler
+  transfermarkt-extract:
+    handler: transfermarkt_extract.handler
     description: Extract transfermarkt data from kaggle.
     runtime: python3.7
     timeout: 60
-    role:
-      { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - "lambda_extract_transfermarkt/*.py"
+        - "transfermarkt_extract/*.py"
     layers:
       - { Ref: KaggleLambdaLayer }
     environment:
-      BUCKET: ${param:transfermarkt-bucket}
+      BUCKET_NAME: transfermarkt-${opt:stage}
       KAGGLE_USERNAME: ${env:KAGGLE_USERNAME}
       KAGGLE_KEY: ${env:KAGGLE_KEY}
       KAGGLE_CONFIG_DIR: /tmp/
 
-  load-gbq:
-    handler: lambda_load_gbq.handler
+  bigquery-load:
+    handler: bigquery_load.handler
     description: Load CSV into the database.
     runtime: python3.9
     timeout: 900
-    role: arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - "lambda_load_gbq/*.py"
+        - "bigquery_load/*.py"
     layers:
       - { Ref: BigqueryLambdaLayer }
-
     environment:
-      GCP_SERVICE_ACCOUNT_TYPE: service_account
-      GCP_SERVICE_ACCOUNT_PROJECT_ID: ${env:GCP_SERVICE_ACCOUNT_PROJECT_ID}
-      GCP_SERVICE_ACCOUNT_PRIVATE_KEY_ID: ${env:GCP_SERVICE_ACCOUNT_PRIVATE_KEY_ID}
-      GCP_SERVICE_ACCOUNT_PRIVATE_KEY: ${env:GCP_SERVICE_ACCOUNT_PRIVATE_KEY}
-      GCP_SERVICE_ACCOUNT_CLIENT_EMAIL: ${env:GCP_SERVICE_ACCOUNT_CLIENT_EMAIL}
-      GCP_SERVICE_ACCOUNT_CLIENT_ID: ${env:GCP_SERVICE_ACCOUNT_CLIENT_ID}
-      GCP_SERVICE_ACCOUNT_AUTH_URI: https://accounts.google.com/o/oauth2/auth
-      GCP_SERVICE_ACCOUNT_TOKEN_URI: https://oauth2.googleapis.com/token
-      GCP_SERVICE_ACCOUNT_AUTH_PROVIDER_X509_CERT_URL: https://www.googleapis.com/oauth2/v1/certs
-      GCP_SERVICE_ACCOUNT_CLIENT_X509_CERT_URL: ${env:GCP_SERVICE_ACCOUNT_CLIENT_X509_CERT_URL}
+      GCP_KEYFILE: ${env:GCP_KEYFILE}
 
 layers:
   bigquery:
@@ -209,8 +175,8 @@ layers:
 
 stepFunctions:
   stateMachines:
-    palpiteiro-extract-cartola-players:
-      name: palpiteiro-extract_cartola_players-${opt:stage}
+    palpiteiro-cartola-players:
+      name: ${self:service}-cartola-players-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
       events:
         - schedule: cron(0 * * * ? *)
@@ -220,17 +186,17 @@ stepFunctions:
         metrics:
           - executionsFailed
       definition:
-        StartAt: ExtractCartolaPlayers
+        StartAt: Extract Cartola Players
         States:
-          ExtractCartolaPlayers:
+          Extract Cartola Players:
             Type: Task
             Resource:
-              Fn::GetAtt: [extract-cartola-players, Arn]
-            Next: TransformCartolaPlayers
-          TransformCartolaPlayers:
+              Fn::GetAtt: [cartola-players-extract, Arn]
+            Next: Transform Cartola Players
+          Transform Cartola Players:
             Type: Task
             Resource:
-              Fn::GetAtt: [transform-cartola-players, Arn]
+              Fn::GetAtt: [cartola-players-transform, Arn]
             Next: Load Google Big Query
             ResultSelector:
               uri.$: "$.uri"
@@ -244,11 +210,11 @@ stepFunctions:
           Load Google Big Query:
             Type: Task
             Resource:
-              Fn::GetAtt: [load-gbq, Arn]
+              Fn::GetAtt: [bigquery-load, Arn]
             End: true
 
-    palpiteiro-extract-cartola-scouts:
-      name: palpiteiro-extract_cartola_scouts-${opt:stage}
+    palpiteiro-cartola-scouts:
+      name: ${self:service}-cartola-scouts-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
       events:
         - schedule: cron(0 */8 * * ? *)
@@ -258,17 +224,17 @@ stepFunctions:
         metrics:
           - executionsFailed
       definition:
-        StartAt: ExtractCartolaScouts
+        StartAt: Extract Cartola Scouts
         States:
-          ExtractCartolaScouts:
+          Extract Cartola Scouts:
             Type: Task
             Resource:
-              Fn::GetAtt: [extract-cartola-scouts, Arn]
-            Next: TransformCartolaScouts
-          TransformCartolaScouts:
+              Fn::GetAtt: [cartola-scouts-extract, Arn]
+            Next: Transform Cartola Scouts
+          Transform Cartola Scouts:
             Type: Task
             Resource:
-              Fn::GetAtt: [transform-cartola-scouts, Arn]
+              Fn::GetAtt: [cartola-scouts-transform, Arn]
             Next: Load Google Big Query
             ResultSelector:
               uri.$: "$.uri"
@@ -282,11 +248,11 @@ stepFunctions:
           Load Google Big Query:
             Type: Task
             Resource:
-              Fn::GetAtt: [load-gbq, Arn]
+              Fn::GetAtt: [bigquery-load, Arn]
             End: true
 
-    palpiteiro-extract-cartola-matches:
-      name: palpiteiro-extract_cartola_matches-${opt:stage}
+    palpiteiro-cartola-matches:
+      name: ${self:service}-cartola-matches-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
       events:
         - schedule: cron(0 */8 * * ? *)
@@ -296,17 +262,17 @@ stepFunctions:
         metrics:
           - executionsFailed
       definition:
-        StartAt: ExtractCartolaMatches
+        StartAt: Extract Cartola Matches
         States:
-          ExtractCartolaMatches:
+          Extract Cartola Matches:
             Type: Task
             Resource:
-              Fn::GetAtt: [extract-cartola-matches, Arn]
-            Next: TransformCartolaMatches
-          TransformCartolaMatches:
+              Fn::GetAtt: [cartola-matches-extract, Arn]
+            Next: Transform Cartola Matches
+          Transform Cartola Matches:
             Type: Task
             Resource:
-              Fn::GetAtt: [transform-cartola-matches, Arn]
+              Fn::GetAtt: [cartola-matches-transform, Arn]
             Next: Load Google Big Query
             ResultSelector:
               uri.$: "$.uri"
@@ -318,11 +284,11 @@ stepFunctions:
           Load Google Big Query:
             Type: Task
             Resource:
-              Fn::GetAtt: [load-gbq, Arn]
+              Fn::GetAtt: [bigquery-load, Arn]
             End: true
 
-    palpiteiro-extract-fivethirtyeight-spi:
-      name: palpiteiro-extract_fivethirtyeight_spi-${opt:stage}
+    palpiteiro-fivethirtyeight-spi:
+      name: ${self:service}-fivethirtyeight-spi-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
       events:
         - schedule: cron(0 */8 * * ? *)
@@ -332,12 +298,12 @@ stepFunctions:
         metrics:
           - executionsFailed
       definition:
-        StartAt: ExtractFiveThirtyEightSPI
+        StartAt: Extract FiveThirtyEight SPI
         States:
-          ExtractFiveThirtyEightSPI:
+          Extract FiveThirtyEight SPI:
             Type: Task
             Resource:
-              Fn::GetAtt: [extract-fivethirtyeight-spi, Arn]
+              Fn::GetAtt: [fivethirtyeight-spi-extract, Arn]
             Next: Load Google Big Query
             ResultSelector:
               uri.$: "$.uri"
@@ -352,31 +318,31 @@ stepFunctions:
           Load Google Big Query:
             Type: Task
             Resource:
-              Fn::GetAtt: [load-gbq, Arn]
+              Fn::GetAtt: [bigquery-load, Arn]
             End: true
 
-    palpiteiro-extract-odds:
-      name: palpiteiro-extract_odds-${opt:stage}
+    palpiteiro-odds:
+      name: ${self:service}-odds-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
       events:
-        - schedule: cron(0 */6 * * ? *)
+        - schedule: cron(0 */12 * * ? *)
       alarms:
         topics:
           alarm: { Ref: SNSTopic }
         metrics:
           - executionsFailed
       definition:
-        StartAt: ExtractOdds
+        StartAt: Extract Odds
         States:
-          ExtractOdds:
+          Extract Odds:
             Type: Task
             Resource:
-              Fn::GetAtt: [extract-odds, Arn]
-            Next: TransformOdds
-          TransformOdds:
+              Fn::GetAtt: [odds-extract, Arn]
+            Next: Transform Odds
+          Transform Odds:
             Type: Task
             Resource:
-              Fn::GetAtt: [transform-odds, Arn]
+              Fn::GetAtt: [odds-transform, Arn]
             Next: Load Google Big Query
             ResultSelector:
               uri.$: "$.uri"
@@ -390,11 +356,11 @@ stepFunctions:
           Load Google Big Query:
             Type: Task
             Resource:
-              Fn::GetAtt: [load-gbq, Arn]
+              Fn::GetAtt: [bigquery-load, Arn]
             End: true
 
-    palpiteiro-extract-transfermarkt:
-      name: palpiteiro-extract_transfermarkt-${opt:stage}
+    palpiteiro-transfermarkt:
+      name: ${self:service}-transfermarkt-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
       events:
         - schedule: cron(0 0 ? * WED *)
@@ -404,12 +370,12 @@ stepFunctions:
         metrics:
           - executionsFailed
       definition:
-        StartAt: ExtractTransfermarkt
+        StartAt: Extract Transfermarkt
         States:
-          ExtractTransfermarkt:
+          Extract Transfermarkt:
             Type: Task
             Resource:
-              Fn::GetAtt: [extract-transfermarkt, Arn]
+              Fn::GetAtt: [transfermarkt-extract, Arn]
             Next: Map
           Map:
             Type: Map
@@ -422,7 +388,7 @@ stepFunctions:
                   Resource: arn:aws:states:::lambda:invoke
                   Parameters:
                     FunctionName:
-                      Fn::GetAtt: [load-gbq, Arn]
+                      Fn::GetAtt: [bigquery-load, Arn]
                     Payload:
                       uri.$: "$.uri"
                       table: null
@@ -435,7 +401,7 @@ resources:
     SNSTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: palpiteiro-${opt:stage}
+        TopicName: ${self:service}-${opt:stage}
         Subscription:
           - Protocol: email
             Endpoint: matheusccouto@gmail.com

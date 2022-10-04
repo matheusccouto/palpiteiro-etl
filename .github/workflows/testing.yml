@@ -1,0 +1,69 @@
+name: Testing
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+  
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    strategy:
+      fail-fast: false
+      matrix:
+        path:
+          - bigquery_load
+          - cartola_matches_extract
+          - cartola_matches_transform
+          - cartola_players_extract
+          - cartola_players_transform
+          - cartola_scouts_extract
+          - cartola_scouts_transform
+          - fivethirtyeight_spi_extract
+          - odds_extract
+          - odds_transform
+          - transfermarkt_extract
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      
+      - name: Authenticate Google Cloud
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GCP_KEYFILE }}
+      
+      - name: Authenticate AWS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install requirements
+        run: |
+          pip install --upgrade pip wheel
+          pip install pytest-cov
+          if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        working-directory: ${{ matrix.path }}
+
+      - name: Test
+        run: pytest ${{ matrix.path }} --cov=./ --cov-report=xml --log-cli-level=INFO
+        env:
+          GCP_KEYFILE: ${{ secrets.GCP_KEYFILE }}
+          THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+          BUCKET_NAME: palpiteiro-test
+
+      - name: Code coverage
+        uses: codecov/codecov-action@v3
