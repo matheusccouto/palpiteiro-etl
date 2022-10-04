@@ -33,7 +33,7 @@ functions:
       patterns:
         - "cartola_players_extract/*.py"
     environment:
-      BUCKET_NAME: cartola-bucket-${opt:stage}
+      BUCKET_NAME: cartola-${opt:stage}
 
   cartola-players-transform:
     handler: cartola_players_transform.handler
@@ -55,7 +55,7 @@ functions:
       patterns:
         - "cartola_scouts_extract/*.py"
     environment:
-      BUCKET_NAME: cartola-bucket-${opt:stage}
+      BUCKET_NAME: cartola-${opt:stage}
 
   cartola-scouts-transform:
     handler: cartola_scouts_transform.handler
@@ -77,7 +77,7 @@ functions:
       patterns:
         - "cartola_matches_extract/*.py"
     environment:
-      BUCKET_NAME: cartola-bucket-${opt:stage}
+      BUCKET_NAME: cartola-${opt:stage}
 
   cartola-matches-transform:
     handler: cartola_matches_transform.handler
