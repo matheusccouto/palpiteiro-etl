@@ -50,7 +50,7 @@ jobs:
         working-directory: ${{ matrix.path }}
 
       - name: Test
-        run: pytest --cov=./ --cov-report=xml --log-cli-level=INFO
+        run: pytest ${{ matrix.path }} --cov=./ --cov-report=xml --log-cli-level=INFO
         env:
           GCP_KEYFILE: ${{ secrets.GCP_KEYFILE }}
           THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
