@@ -9,7 +9,7 @@ on:
 jobs:
   testing:
     runs-on: ubuntu-latest
-    environment: ${{ github.BASE_REF }}
+    environment: dev
 
     strategy:
       fail-fast: false
@@ -63,6 +63,7 @@ jobs:
           THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+          BUCKET_NAME: palpiteiro-test
 
       - name: Code coverage
         uses: codecov/codecov-action@v3
