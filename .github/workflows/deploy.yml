@@ -17,10 +17,10 @@ on:
       - cartola_players_transform/*.py
       - cartola_scouts_extract/*.py
       - cartola_scouts_transform/*.py
-      - cartola_fivethirtyeight_extract/*.py
-      - cartola_odds_extract/*.py
-      - cartola_odds_transform/*.py
-      - cartola_transfermarkt_extract/*.py
+      - fivethirtyeight_extract/*.py
+      - odds_extract/*.py
+      - odds_transform/*.py
+      - transfermarkt_extract/*.py
 
 jobs:
   deploy:

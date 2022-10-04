@@ -22,10 +22,10 @@ jobs:
           - cartola_players_transform
           - cartola_scouts_extract
           - cartola_scouts_transform
-          - cartola_fivethirtyeight_extract
-          - cartola_odds_extract
-          - cartola_odds_transform
-          - cartola_transfermarkt_extract
+          - fivethirtyeight_extract
+          - odds_extract
+          - odds_transform
+          - transfermarkt_extract
 
     steps:
       - name: Checkout repo
