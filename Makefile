@@ -1,28 +1,49 @@
-codespaces: pip
+codespaces: pip serverless
 	pip install -r requirements-bigquery.txt
 	pip install -r requirements-kaggle.txt
 	pip install -r requirements-pandas.txt
 	pip install -r requirements-requests.txt
-upgrade-pip: pip
+pip:
 	pip install --upgrade pip wheel
-bigquery-layer: layer_bigquery.zip
+serverless:
+	npm install -g serverless@3
+	npm install --save-dev serverless-step-functions
+layer_bigquery.zip: pip
 	mkdir python
-	pip install -r requirements-bigquery.txt --target python
+	pip install \
+		--platform manylinux2014_x86_64 \
+		--implementation cp \
+		--python 3.9 \
+		--only-binary=:all: \
+		--target python \
+		-r requirements-bigquery.txt
 	zip -r layer_bigquery.zip python/
 	rm -r python
-kaggle-layer: layer_kaggle.zip
+layer_kaggle.zip: pip
 	mkdir python
-	pip install -r requirements-kaggle.txt --target python
+	pip install --target python -r requirements-kaggle.txt
 	zip -r layer_kaggle.zip python/
 	rm -r python
-pandas-layer: layer_pandas.zip
+layer_pandas.zip: pip
 	mkdir python
-	pip install -r requirements-pandas.txt --target python
+	pip install \
+		--platform manylinux2014_x86_64 \
+		--implementation cp \
+		--python 3.9 \
+		--only-binary=:all: \
+		--target python \
+		-r requirements-pandas.txt
 	zip -r layer_pandas.zip python/
 	rm -r python
-requests-layer: layer_requests.zip
+layer_requests.zip: pip
 	mkdir python
-	pip install -r requirements-requests.txt --target python
+	pip install \
+		--platform manylinux2014_x86_64 \
+		--implementation cp \
+		--python 3.9 \
+		--only-binary=:all: \
+		--target python \
+		-r requirements-requests.txt
 	zip -r layer_requests.zip python/
 	rm -r python
 layers: layer_bigquery.zip layer_kaggle.zip layer_kaggle.zip layer_pandas.zip layer_requests.zip

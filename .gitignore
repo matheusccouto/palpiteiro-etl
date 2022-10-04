@@ -1,3 +1,7 @@
+# Serverless
+.serverless/
+*.zip
+
 # VSCode
 .vscode
 

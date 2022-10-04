@@ -15,8 +15,7 @@ provider:
   name: aws
   stage: ${opt:stage}
   region: us-east-1
-  deploymentBucket:
-    name: ${param:deployment-bucket}
+  deploymentBucket: palpiteiro-${opt:stage}
 
 package:
   individually: true
@@ -29,10 +28,10 @@ functions:
     handler: cartola_players_extract.handler
     description: Extract players data from Cartola FC to JSON.
     runtime: python3.9
-    role: arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - cartola_players_extract/*.py
+        - "cartola_players_extract/*.py"
     environment:
       BUCKET_NAME: cartola-bucket-${opt:stage}
 
@@ -40,10 +39,10 @@ functions:
     handler: cartola_players_transform.handler
     description: Transform players data from Cartola FC from JSON to CSV.
     runtime: python3.9
-    role: arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - cartola_players_transform/*.py
+        - "cartola_players_transform/*.py"
     layers:
       - { Ref: PandasLambdaLayer }
 
@@ -51,10 +50,10 @@ functions:
     handler: cartola_scouts_extract.handler
     description: Extract scouts data from Cartola FC to JSON.
     runtime: python3.9
-    role: arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - cartola_scouts_extract/*.py
+        - "cartola_scouts_extract/*.py"
     environment:
       BUCKET_NAME: cartola-bucket-${opt:stage}
 
@@ -62,10 +61,10 @@ functions:
     handler: cartola_scouts_transform.handler
     description: Transform scouts data from Cartola FC from JSON to CSV.
     runtime: python3.9
-    role: arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - cartola_scouts_transform/*.py
+        - "cartola_scouts_transform/*.py"
     layers:
       - { Ref: PandasLambdaLayer }
 
@@ -73,10 +72,10 @@ functions:
     handler: cartola_matches_extract.handler
     description: Extract matches data from Cartola FC to JSON.
     runtime: python3.9
-    role: arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - cartola_matches_extract/*.py
+        - "cartola_matches_extract/*.py"
     environment:
       BUCKET_NAME: cartola-bucket-${opt:stage}
 
@@ -84,10 +83,10 @@ functions:
     handler: cartola_matches_transform.handler
     description: Transform matches data from Cartola FC from JSON to CSV.
     runtime: python3.9
-    role: arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - cartola_matches_transform/*.py
+        - "cartola_matches_transform/*.py"
     layers:
       - { Ref: PandasLambdaLayer }
 
@@ -95,10 +94,10 @@ functions:
     handler: fivethirtyeight_spi_extract.handler
     description: Extract matches data from FiveThirtyEight SPI to CSV.
     runtime: python3.9
-    role: arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - fivethirtyeight_spi_extract/*.py
+        - "fivethirtyeight_spi_extract/*.py"
     layers:
       - { Ref: PandasLambdaLayer }
     environment:
@@ -108,10 +107,10 @@ functions:
     handler: odds_extract.handler
     description: Extract odds from The Odds API.
     runtime: python3.9
-    role: arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - odds_extract/*.py
+        - "odds_extract/*.py"
     layers:
       - { Ref: RequestsLambdaLayer }
     environment:
@@ -122,10 +121,10 @@ functions:
     handler: odds_transform.handler
     description: Transform odds data.
     runtime: python3.9
-    role: arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - odds_transform/*.py
+        - "odds_transform/*.py"
     layers:
       - { Ref: PandasLambdaLayer }
 
@@ -134,10 +133,10 @@ functions:
     description: Extract transfermarkt data from kaggle.
     runtime: python3.7
     timeout: 60
-    role: arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - transfermarkt_extract/*.py
+        - "transfermarkt_extract/*.py"
     layers:
       - { Ref: KaggleLambdaLayer }
     environment:
@@ -151,10 +150,10 @@ functions:
     description: Load CSV into the database.
     runtime: python3.9
     timeout: 900
-    role: arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - bigquery_load/*.py
+        - "bigquery_load/*.py"
     layers:
       - { Ref: BigqueryLambdaLayer }
     environment:
@@ -177,7 +176,7 @@ layers:
 stepFunctions:
   stateMachines:
     palpiteiro-cartola-players:
-      name: palpiteiro-cartola-players-${opt:stage}
+      name: ${self:service}-cartola-players-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
       events:
         - schedule: cron(0 * * * ? *)
@@ -215,7 +214,7 @@ stepFunctions:
             End: true
 
     palpiteiro-cartola-scouts:
-      name: palpiteiro-cartola-scouts-${opt:stage}
+      name: ${self:service}-cartola-scouts-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
       events:
         - schedule: cron(0 */8 * * ? *)
@@ -253,7 +252,7 @@ stepFunctions:
             End: true
 
     palpiteiro-cartola-matches:
-      name: palpiteiro-cartola-matches-${opt:stage}
+      name: ${self:service}-cartola-matches-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
       events:
         - schedule: cron(0 */8 * * ? *)
@@ -289,7 +288,7 @@ stepFunctions:
             End: true
 
     palpiteiro-fivethirtyeight-spi:
-      name: palpiteiro-fivethirtyeight-spi-${opt:stage}
+      name: ${self:service}-fivethirtyeight-spi-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
       events:
         - schedule: cron(0 */8 * * ? *)
@@ -323,17 +322,17 @@ stepFunctions:
             End: true
 
     palpiteiro-odds:
-      name: palpiteiro-odds-${opt:stage}
+      name: ${self:service}-odds-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
       events:
-        - schedule: cron(0 */6 * * ? *)
+        - schedule: cron(0 */12 * * ? *)
       alarms:
         topics:
           alarm: { Ref: SNSTopic }
         metrics:
           - executionsFailed
       definition:
-        StartAt: Extrac tOdds
+        StartAt: Extract Odds
         States:
           Extract Odds:
             Type: Task
@@ -361,7 +360,7 @@ stepFunctions:
             End: true
 
     palpiteiro-transfermarkt:
-      name: palpiteiro-transfermarkt-${opt:stage}
+      name: ${self:service}-transfermarkt-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
       events:
         - schedule: cron(0 0 ? * WED *)
@@ -402,7 +401,7 @@ resources:
     SNSTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: palpiteiro-${opt:stage}
+        TopicName: ${self:service}-${opt:stage}
         Subscription:
           - Protocol: email
             Endpoint: matheusccouto@gmail.com
