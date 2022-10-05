@@ -9,4 +9,4 @@ Points prediction for the fantasy soccer app.
 
 ## ETLs
 ETLs are AWS step functions that reads the API, saves raw data in a S3 bucket and loads into GCP Big Query.
-![overview](diagrams/overview.png)
+![architecture](diagrams/architecture.png)
