@@ -1,5 +1,5 @@
 # :soccer: Palpiteiro ETL
-ETL pipelines for Palpiteiro data.
+ETL pipelines for fantasy soccer data.
 
 [![Deploy](https://github.com/matheusccouto/palpiteiro-etl/actions/workflows/deploy.yml/badge.svg)](https://github.com/matheusccouto/palpiteiro-etl/actions/workflows/deploy.yml)
 
