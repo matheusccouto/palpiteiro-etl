@@ -1,5 +1,5 @@
 # :soccer: Palpiteiro ETL
-Points prediction for the fantasy soccer app.
+ETL pipelines for Palpiteiro data.
 
 [![Deploy](https://github.com/matheusccouto/palpiteiro-etl/actions/workflows/deploy.yml/badge.svg)](https://github.com/matheusccouto/palpiteiro-etl/actions/workflows/deploy.yml)
 
