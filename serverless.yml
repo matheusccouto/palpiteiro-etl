@@ -112,6 +112,28 @@ functions:
     layers:
       - { Ref: PandasLambdaLayer }
 
+  cartola-popular-extract:
+    handler: cartola_popular_extract.handler
+    description: Extract most popular players data from Cartola FC to JSON.
+    runtime: python3.9
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    package:
+      patterns:
+        - "cartola_popular_extract/*.py"
+    environment:
+      BUCKET_NAME: cartola-${opt:stage}
+
+  cartola-popular-transform:
+    handler: cartola_popular_transform.handler
+    description: Transform most popular players data from Cartola FC from JSON to CSV.
+    runtime: python3.9
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    package:
+      patterns:
+        - "cartola_popular_transform/*.py"
+    layers:
+      - { Ref: PandasLambdaLayer }
+
   fivethirtyeight-spi-extract:
     handler: fivethirtyeight_spi_extract.handler
     description: Extract matches data from FiveThirtyEight SPI to CSV.
