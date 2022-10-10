@@ -326,7 +326,7 @@ stepFunctions:
             Type: Task
             Resource:
               Fn::GetAtt: [cartola-squad-extract, Arn]
-            Next: Transform Cartola squad Players
+            Next: Transform Cartola Squad Players
           Transform Cartola Squad Players:
             Type: Task
             Resource:
@@ -341,6 +341,44 @@ stepFunctions:
                 - temporada
                 - rodada
                 - selecao
+                - ranking
+          Load Google Big Query:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [bigquery-load, Arn]
+            End: true
+
+    palpiteiro-cartola-popular:
+      name: ${self:service}-cartola-popular-${opt:stage}
+      role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
+      events:
+        - schedule: cron(0 * * * ? *)
+      alarms:
+        topics:
+          alarm: { Ref: SNSTopic }
+        metrics:
+          - executionsFailed
+      definition:
+        StartAt: Extract Cartola Popular Players
+        States:
+          Extract Cartola Popular Players:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [cartola-popular-extract, Arn]
+            Next: Transform Cartola Popular Players
+          Transform Cartola Popular Players:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [cartola-popular-transform, Arn]
+            Next: Load Google Big Query
+            ResultSelector:
+              uri.$: "$.uri"
+              table: selecao
+              schema: cartola
+              type: merge
+              subset:
+                - temporada
+                - rodada
                 - ranking
           Load Google Big Query:
             Type: Task
