@@ -22,6 +22,10 @@ jobs:
           - cartola_players_transform
           - cartola_scouts_extract
           - cartola_scouts_transform
+          - cartola_squad_extract
+          - cartola_squad_transform
+          - cartola_popular_extract
+          - cartola_popular_transform
           - fivethirtyeight_spi_extract
           - odds_extract
           - odds_transform

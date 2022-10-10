@@ -8,6 +8,8 @@ import pandas as pd
 import utils.aws.s3
 import utils.http
 
+LINE_UPS = ["selecao", "capitaes", "reservas"]
+
 
 def handler(event, context=None):  # pylint: disable=unused-argument
     """Lambda handler."""
@@ -15,13 +17,19 @@ def handler(event, context=None):  # pylint: disable=unused-argument
     data = json.loads(utils.aws.s3.load(event["uri"]))
 
     players = []
-    for player in data:
-        player.update(player.pop("Atleta"))
-        players.append(player)
+    for line_up in LINE_UPS:
+        for player in data[line_up]:
+            player.update(player.pop("Atleta"))
+            player["selecao"] = line_up
+            players.append(player)
 
     dataframe = pd.DataFrame.from_records(players)
+    dataframe["temporada"] = data["temporada"]
+    dataframe["rodada"] = data["rodada"]
     dataframe["ranking"] = (
-        dataframe["escalacoes"].rank(method="first", ascending=False).astype(int)
+        dataframe.groupby("selecao")["escalacoes"]
+        .rank("first", ascending=False)
+        .astype(int)
     )
 
     # Save as CSV

@@ -90,6 +90,28 @@ functions:
     layers:
       - { Ref: PandasLambdaLayer }
 
+  cartola-squad-extract:
+    handler: cartola_squad_extract.handler
+    description: Extract most popular line up players data from Cartola FC to JSON.
+    runtime: python3.9
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    package:
+      patterns:
+        - "cartola_squad_extract/*.py"
+    environment:
+      BUCKET_NAME: cartola-${opt:stage}
+
+  cartola-squad-transform:
+    handler: cartola_squad_transform.handler
+    description: Transform most popular line up players data from Cartola FC from JSON to CSV.
+    runtime: python3.9
+    role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
+    package:
+      patterns:
+        - "cartola_squad_transform/*.py"
+    layers:
+      - { Ref: PandasLambdaLayer }
+
   cartola-popular-extract:
     handler: cartola_popular_extract.handler
     description: Extract most popular players data from Cartola FC to JSON.
@@ -309,6 +331,45 @@ stepFunctions:
               Fn::GetAtt: [bigquery-load, Arn]
             End: true
 
+    palpiteiro-cartola-squad:
+      name: ${self:service}-cartola-squad-${opt:stage}
+      role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
+      events:
+        - schedule: cron(0 * * * ? *)
+      alarms:
+        topics:
+          alarm: { Ref: SNSTopic }
+        metrics:
+          - executionsFailed
+      definition:
+        StartAt: Extract Cartola Squad Players
+        States:
+          Extract Cartola Squad Players:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [cartola-squad-extract, Arn]
+            Next: Transform Cartola Squad Players
+          Transform Cartola Squad Players:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [cartola-squad-transform, Arn]
+            Next: Load Google Big Query
+            ResultSelector:
+              uri.$: "$.uri"
+              table: selecao
+              schema: cartola
+              type: merge
+              subset:
+                - temporada
+                - rodada
+                - selecao
+                - ranking
+          Load Google Big Query:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [bigquery-load, Arn]
+            End: true
+
     palpiteiro-cartola-popular:
       name: ${self:service}-cartola-popular-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
@@ -334,13 +395,12 @@ stepFunctions:
             Next: Load Google Big Query
             ResultSelector:
               uri.$: "$.uri"
-              table: selecao
+              table: destaques
               schema: cartola
               type: merge
               subset:
                 - temporada
                 - rodada
-                - selecao
                 - ranking
           Load Google Big Query:
             Type: Task
