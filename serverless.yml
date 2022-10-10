@@ -395,7 +395,7 @@ stepFunctions:
             Next: Load Google Big Query
             ResultSelector:
               uri.$: "$.uri"
-              table: selecao
+              table: destaques
               schema: cartola
               type: merge
               subset:
