@@ -1,4 +1,4 @@
-"""Extract most popular players data from Cartola FC."""
+"""Extract most popular line up players data from Cartola FC."""
 
 import json
 import os
@@ -6,7 +6,7 @@ import os
 import utils.aws.s3
 import utils.http
 
-POPULAR_URL = "https://api.cartola.globo.com/mercado/selecao"
+SQUAD_URL = "https://api.cartola.globo.com/mercado/selecao"
 STATUS_URL = "https://api.cartola.globo.com/mercado/status"
 
 
@@ -16,7 +16,7 @@ def handler(event, context=None):  # pylint: disable=unused-argument
     if status["game_over"]:
         raise ConnectionAbortedError("Extraction aborted. Game is over.")
 
-    populars = utils.http.get(POPULAR_URL)
+    squad = utils.http.get(SQUAD_URL)
 
     # This endpoint returns has no reference at all for which season this is.
     # This is important to us as we work with multiseason data.
@@ -25,11 +25,11 @@ def handler(event, context=None):  # pylint: disable=unused-argument
     season = status["temporada"]
     rnd = status["rodada_atual"]
 
-    populars["temporada"] = season
-    populars["rodada"] = rnd
+    squad["temporada"] = season
+    squad["rodada"] = rnd
 
     bucket = os.getenv("BUCKET_NAME")
     key = f"mercado/selecao/{season}-{rnd:02d}.json"
     uri = f"s3://{bucket}/{key}"
-    utils.aws.s3.save(data=json.dumps(populars), uri=uri)
+    utils.aws.s3.save(data=json.dumps(squad), uri=uri)
     return {"uri": uri}

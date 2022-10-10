@@ -62,7 +62,7 @@ with Diagram(
             >> S3("csv")
             >> load
         )
-    with Cluster("popular players"):
+    with Cluster("popular line up"):
         (
             cartola_mercado_selecao
             >> Lambda("extract")

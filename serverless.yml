@@ -90,25 +90,25 @@ functions:
     layers:
       - { Ref: PandasLambdaLayer }
 
-  cartola-popular-extract:
-    handler: cartola_popular_extract.handler
-    description: Extract most popular players data from Cartola FC to JSON.
+  cartola-squad-extract:
+    handler: cartola_squad_extract.handler
+    description: Extract most popular line up players data from Cartola FC to JSON.
     runtime: python3.9
     role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - "cartola_popular_extract/*.py"
+        - "cartola_squad_extract/*.py"
     environment:
       BUCKET_NAME: cartola-${opt:stage}
 
-  cartola-popular-transform:
-    handler: cartola_popular_transform.handler
-    description: Transform most popular players data from Cartola FC from JSON to CSV.
+  cartola-squad-transform:
+    handler: cartola_squad_transform.handler
+    description: Transform most popular line up players data from Cartola FC from JSON to CSV.
     runtime: python3.9
     role: { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/palpiteiro-scraper" }
     package:
       patterns:
-        - "cartola_popular_transform/*.py"
+        - "cartola_squad_transform/*.py"
     layers:
       - { Ref: PandasLambdaLayer }
 
@@ -309,8 +309,8 @@ stepFunctions:
               Fn::GetAtt: [bigquery-load, Arn]
             End: true
 
-    palpiteiro-cartola-popular:
-      name: ${self:service}-cartola-popular-${opt:stage}
+    palpiteiro-cartola-squad:
+      name: ${self:service}-cartola-squad-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
       events:
         - schedule: cron(0 * * * ? *)
@@ -320,17 +320,17 @@ stepFunctions:
         metrics:
           - executionsFailed
       definition:
-        StartAt: Extract Cartola Popular Players
+        StartAt: Extract Cartola Squad Players
         States:
-          Extract Cartola Popular Players:
+          Extract Cartola Squad Players:
             Type: Task
             Resource:
-              Fn::GetAtt: [cartola-popular-extract, Arn]
-            Next: Transform Cartola Popular Players
-          Transform Cartola Popular Players:
+              Fn::GetAtt: [cartola-squad-extract, Arn]
+            Next: Transform Cartola squad Players
+          Transform Cartola Squad Players:
             Type: Task
             Resource:
-              Fn::GetAtt: [cartola-popular-transform, Arn]
+              Fn::GetAtt: [cartola-squad-transform, Arn]
             Next: Load Google Big Query
             ResultSelector:
               uri.$: "$.uri"
