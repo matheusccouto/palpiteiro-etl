@@ -17,6 +17,10 @@ on:
       - cartola_players_transform/*.py
       - cartola_scouts_extract/*.py
       - cartola_scouts_transform/*.py
+      - cartola_squad_extract/*.py
+      - cartola_squad_transform/*.py
+      - cartola_popular_extract/*.py
+      - cartola_popular_transform/*.py
       - fivethirtyeight_spi_extract/*.py
       - odds_extract/*.py
       - odds_transform/*.py
