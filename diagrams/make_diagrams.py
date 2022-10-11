@@ -15,6 +15,7 @@ ICONS_DIR = os.path.join(THIS_DIR, "icons")
 CARTOLA_PATH = os.path.join(ICONS_DIR, "cartola.png")
 FIVETHIRTYEIGHT_PATH = os.path.join(ICONS_DIR, "538.png")
 ODDS_PATH = os.path.join(ICONS_DIR, "the_odds_api.png")
+KAGGLE_PATH = os.path.join(ICONS_DIR, "kaggle.png")
 
 
 with Diagram(
@@ -35,6 +36,7 @@ with Diagram(
     cartola_mercado_destaques = Custom("/mercado/destaques", CARTOLA_PATH)
     fivethirtyeight = Custom("/soccer-api/club", FIVETHIRTYEIGHT_PATH)
     odds = Custom("/soccer_brazil_campeonato", ODDS_PATH)
+    kaggle = Custom("/davidcariboo/player-scores", KAGGLE_PATH)
     load = Lambda("load")
     with Cluster("players"):
         (
@@ -63,7 +65,7 @@ with Diagram(
             >> S3("csv")
             >> load
         )
-    with Cluster("squad line up"):
+    with Cluster("popular line up"):
         (
             cartola_mercado_selecao
             >> Lambda("extract")
@@ -72,7 +74,7 @@ with Diagram(
             >> S3("csv")
             >> load
         )
-    with Cluster("popular line up"):
+    with Cluster("popular players"):
         (
             cartola_mercado_destaques
             >> Lambda("extract")
@@ -81,8 +83,6 @@ with Diagram(
             >> S3("csv")
             >> load
         )
-    with Cluster("spi"):
-        fivethirtyeight >> Lambda("extract") >> S3("csv") >> load
     with Cluster("odds"):
         (
             odds
@@ -92,4 +92,8 @@ with Diagram(
             >> S3("csv")
             >> load
         )
+    with Cluster("spi"):
+        fivethirtyeight >> Lambda("extract") >> S3("csv") >> load
+    with Cluster("transfermarkt"):
+        kaggle >> Lambda("extract") >> S3("csv") >> load
     load >> bigquery
