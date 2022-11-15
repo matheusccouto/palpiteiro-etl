@@ -222,8 +222,8 @@ stepFunctions:
     palpiteiro-cartola-players:
       name: ${self:service}-cartola-players-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
-      events:
-        - schedule: cron(0 * * * ? *)
+      # events:
+      #   - schedule: cron(0 * * * ? *)
       alarms:
         topics:
           alarm: { Ref: SNSTopic }
@@ -260,8 +260,8 @@ stepFunctions:
     palpiteiro-cartola-scouts:
       name: ${self:service}-cartola-scouts-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
-      events:
-        - schedule: cron(0 */8 * * ? *)
+      # events:
+      #   - schedule: cron(0 */8 * * ? *)
       alarms:
         topics:
           alarm: { Ref: SNSTopic }
@@ -298,8 +298,8 @@ stepFunctions:
     palpiteiro-cartola-matches:
       name: ${self:service}-cartola-matches-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
-      events:
-        - schedule: cron(0 */8 * * ? *)
+      # events:
+      #   - schedule: cron(0 */8 * * ? *)
       alarms:
         topics:
           alarm: { Ref: SNSTopic }
@@ -334,8 +334,8 @@ stepFunctions:
     palpiteiro-cartola-squad:
       name: ${self:service}-cartola-squad-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
-      events:
-        - schedule: cron(0 * * * ? *)
+      # events:
+      #   - schedule: cron(0 * * * ? *)
       alarms:
         topics:
           alarm: { Ref: SNSTopic }
@@ -373,8 +373,8 @@ stepFunctions:
     palpiteiro-cartola-popular:
       name: ${self:service}-cartola-popular-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
-      events:
-        - schedule: cron(0 * * * ? *)
+      # events:
+      #   - schedule: cron(0 * * * ? *)
       alarms:
         topics:
           alarm: { Ref: SNSTopic }
@@ -411,8 +411,8 @@ stepFunctions:
     palpiteiro-fivethirtyeight-spi:
       name: ${self:service}-fivethirtyeight-spi-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
-      events:
-        - schedule: cron(0 */8 * * ? *)
+      # events:
+      #   - schedule: cron(0 */8 * * ? *)
       alarms:
         topics:
           alarm: { Ref: SNSTopic }
@@ -445,8 +445,8 @@ stepFunctions:
     palpiteiro-odds:
       name: ${self:service}-odds-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
-      events:
-        - schedule: cron(0 */12 * * ? *)
+      # events:
+      #   - schedule: cron(0 */12 * * ? *)
       alarms:
         topics:
           alarm: { Ref: SNSTopic }
@@ -483,8 +483,8 @@ stepFunctions:
     palpiteiro-transfermarkt:
       name: ${self:service}-transfermarkt-${opt:stage}
       role: arn:aws:iam::${aws:accountId}:role/palpiteiro-step-functions
-      events:
-        - schedule: cron(0 0 ? * WED *)
+      # events:
+      #   - schedule: cron(0 0 ? * WED *)
       alarms:
         topics:
           alarm: { Ref: SNSTopic }
