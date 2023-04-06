@@ -203,20 +203,6 @@ functions:
     environment:
       GCP_KEYFILE: ${env:GCP_KEYFILE}
 
-layers:
-  bigquery:
-    package:
-      artifact: layer_bigquery.zip
-  pandas:
-    package:
-      artifact: layer_pandas.zip
-  requests:
-    package:
-      artifact: layer_requests.zip
-  kaggle:
-    package:
-      artifact: layer_kaggle.zip
-
 stepFunctions:
   stateMachines:
     palpiteiro-cartola-players:
