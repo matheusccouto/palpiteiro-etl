@@ -44,7 +44,7 @@ functions:
       patterns:
         - "cartola_players_transform/*.py"
     layers:
-      - { Ref: PandasLambdaLayer }
+      - arn:aws:lambda:us-east-1:908760436040:layer:pandas:263
 
   cartola-scouts-extract:
     handler: cartola_scouts_extract.handler
@@ -66,7 +66,7 @@ functions:
       patterns:
         - "cartola_scouts_transform/*.py"
     layers:
-      - { Ref: PandasLambdaLayer }
+      - arn:aws:lambda:us-east-1:908760436040:layer:pandas:263
 
   cartola-matches-extract:
     handler: cartola_matches_extract.handler
@@ -88,7 +88,7 @@ functions:
       patterns:
         - "cartola_matches_transform/*.py"
     layers:
-      - { Ref: PandasLambdaLayer }
+      - arn:aws:lambda:us-east-1:908760436040:layer:pandas:263
 
   cartola-squad-extract:
     handler: cartola_squad_extract.handler
@@ -110,7 +110,7 @@ functions:
       patterns:
         - "cartola_squad_transform/*.py"
     layers:
-      - { Ref: PandasLambdaLayer }
+      - arn:aws:lambda:us-east-1:908760436040:layer:pandas:263
 
   cartola-popular-extract:
     handler: cartola_popular_extract.handler
@@ -132,7 +132,7 @@ functions:
       patterns:
         - "cartola_popular_transform/*.py"
     layers:
-      - { Ref: PandasLambdaLayer }
+      - arn:aws:lambda:us-east-1:908760436040:layer:pandas:263
 
   fivethirtyeight-spi-extract:
     handler: fivethirtyeight_spi_extract.handler
@@ -143,7 +143,7 @@ functions:
       patterns:
         - "fivethirtyeight_spi_extract/*.py"
     layers:
-      - { Ref: PandasLambdaLayer }
+      - arn:aws:lambda:us-east-1:908760436040:layer:pandas:263
     environment:
       BUCKET_NAME: fivethirtyeight-${opt:stage}
 
@@ -156,7 +156,7 @@ functions:
       patterns:
         - "odds_extract/*.py"
     layers:
-      - { Ref: RequestsLambdaLayer }
+      - arn:aws:lambda:us-east-1:908760436040:layer:requests:94
     environment:
       BUCKET_NAME: betting-${opt:stage}
       THE_ODDS_API_KEY: ${env:THE_ODDS_API_KEY}
@@ -170,7 +170,7 @@ functions:
       patterns:
         - "odds_transform/*.py"
     layers:
-      - { Ref: PandasLambdaLayer }
+      - arn:aws:lambda:us-east-1:908760436040:layer:pandas:263
 
   transfermarkt-extract:
     handler: transfermarkt_extract.handler
@@ -182,7 +182,7 @@ functions:
       patterns:
         - "transfermarkt_extract/*.py"
     layers:
-      - { Ref: KaggleLambdaLayer }
+      - arn:aws:lambda:us-east-1:908760436040:layer:kaggle:59
     environment:
       BUCKET_NAME: transfermarkt-${opt:stage}
       KAGGLE_USERNAME: ${env:KAGGLE_USERNAME}
@@ -199,7 +199,7 @@ functions:
       patterns:
         - "bigquery_load/*.py"
     layers:
-      - { Ref: BigqueryLambdaLayer }
+      - arn:aws:lambda:us-east-1:908760436040:layer:bigquery:226
     environment:
       GCP_KEYFILE: ${env:GCP_KEYFILE}
 
