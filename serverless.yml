@@ -6,7 +6,7 @@ params:
     cartola-bot-schedule-enabled: true
 
   dev:
-    cartola-bot-schedule-enabled: false
+    cartola-bot-schedule-enabled: true
 
 custom:
   account: "#{AWS::AccountId}"
