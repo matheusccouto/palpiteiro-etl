@@ -25,7 +25,7 @@ jobs:
 
       - name: Create Layer
         run: |
-          pip install &{{ inputs.packages }} --target python
+          pip install ${{ inputs.packages }} --target python
           zip -r layer.zip python
 
       - name: Upload Artifacts
