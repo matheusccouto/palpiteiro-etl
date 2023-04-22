@@ -1,7 +1,7 @@
 name: Deploy Layer
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       packages:
         required: true
